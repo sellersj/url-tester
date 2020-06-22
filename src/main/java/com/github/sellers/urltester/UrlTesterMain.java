@@ -15,7 +15,33 @@ import org.apache.http.impl.client.HttpClients;
 public class UrlTesterMain {
 
     public static void main(String[] args) {
+        Options options = buildOptions();
 
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd;
+
+        try {
+            cmd = parser.parse(options, args);
+            setProxySettings(cmd);
+
+            if (null != cmd.getOptionValues("url")) {
+                for (String url : cmd.getOptionValues("url")) {
+                    checkUrl(url);
+                }
+            } else {
+                formatter.printHelp("url-tester", options);
+            }
+
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("url-tester", options);
+
+            System.exit(1);
+        }
+    }
+
+    private static Options buildOptions() {
         Options options = new Options();
         Option urlsOption = new Option("url", null, true, "The Urls to try to contact over https");
         urlsOption.setArgs(Option.UNLIMITED_VALUES);
@@ -32,37 +58,19 @@ public class UrlTesterMain {
         nonproxyOption.setOptionalArg(true);
         options.addOption(nonproxyOption);
 
-        CommandLineParser parser = new DefaultParser();
-        HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd;
+        return options;
+    }
 
-        try {
-            cmd = parser.parse(options, args);
-
-            if (null != cmd.getOptionValue("proxyHost")) {
-                System.setProperty("https.proxyHost", cmd.getOptionValue("proxyHost"));
-                System.setProperty("java.net.useSystemProxies", "true");
-            }
-            if (null != cmd.getOptionValue("proxyPort")) {
-                System.setProperty("https.proxyPort", cmd.getOptionValue("proxyPort"));
-            }
-            if (null != cmd.getOptionValue("nonProxyHosts")) {
-                System.setProperty("http.nonProxyHosts", cmd.getOptionValue("nonProxyHosts"));
-            }
-
-            if (null != cmd.getOptionValues("url")) {
-                for (String url : cmd.getOptionValues("url")) {
-                    checkUrl(url);
-                }
-            } else {
-                formatter.printHelp("url-tester", options);
-            }
-
-        } catch (ParseException e) {
-            System.out.println(e.getMessage());
-            formatter.printHelp("url-tester", options);
-
-            System.exit(1);
+    private static void setProxySettings(CommandLine cmd) {
+        if (null != cmd.getOptionValue("proxyHost")) {
+            System.setProperty("http.proxyHost", cmd.getOptionValue("proxyHost"));
+            System.setProperty("java.net.useSystemProxies", "true");
+        }
+        if (null != cmd.getOptionValue("proxyPort")) {
+            System.setProperty("http.proxyPort", cmd.getOptionValue("proxyPort"));
+        }
+        if (null != cmd.getOptionValue("nonProxyHosts")) {
+            System.setProperty("http.nonProxyHosts", cmd.getOptionValue("nonProxyHosts"));
         }
     }
 
