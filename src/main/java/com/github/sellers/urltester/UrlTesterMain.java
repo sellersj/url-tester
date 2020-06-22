@@ -28,6 +28,10 @@ public class UrlTesterMain {
         proxyPortOption.setOptionalArg(true);
         options.addOption(proxyPortOption);
 
+        Option nonproxyOption = new Option("nonProxyHosts", null, true, "The hosts that do not need a proxy");
+        nonproxyOption.setOptionalArg(true);
+        options.addOption(nonproxyOption);
+
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
@@ -41,6 +45,9 @@ public class UrlTesterMain {
             }
             if (null != cmd.getOptionValue("proxyPort")) {
                 System.setProperty("https.proxyPort", cmd.getOptionValue("proxyPort"));
+            }
+            if (null != cmd.getOptionValue("nonProxyHosts")) {
+                System.setProperty("http.nonProxyHosts", cmd.getOptionValue("nonProxyHosts"));
             }
 
             if (null != cmd.getOptionValues("url")) {
