@@ -63,11 +63,11 @@ public class UrlTesterMain {
 
     private static void setProxySettings(CommandLine cmd) {
         if (null != cmd.getOptionValue("proxyHost")) {
-            System.setProperty("http.proxyHost", cmd.getOptionValue("proxyHost"));
+            System.setProperty("https.proxyHost", cmd.getOptionValue("proxyHost"));
             System.setProperty("java.net.useSystemProxies", "true");
         }
         if (null != cmd.getOptionValue("proxyPort")) {
-            System.setProperty("http.proxyPort", cmd.getOptionValue("proxyPort"));
+            System.setProperty("https.proxyPort", cmd.getOptionValue("proxyPort"));
         }
         if (null != cmd.getOptionValue("nonProxyHosts")) {
             System.setProperty("http.nonProxyHosts", cmd.getOptionValue("nonProxyHosts"));
@@ -75,7 +75,7 @@ public class UrlTesterMain {
     }
 
     private static void checkUrl(String urlAddress) {
-        CloseableHttpClient client = HttpClients.createDefault();
+        CloseableHttpClient client = HttpClients.createSystem();
 
         try {
             HttpGet method = new HttpGet("https://" + urlAddress);
